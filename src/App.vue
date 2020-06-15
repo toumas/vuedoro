@@ -18,7 +18,7 @@
 
 <script>
 import { uuidv4 } from "./uuid";
-import EditableText from "./components/EditableText";
+import EditableText from "./components/EditableText.vue";
 
 export default {
   name: "App",
