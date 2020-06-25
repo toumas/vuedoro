@@ -25,4 +25,12 @@ describe("EditableText", () => {
     await form.trigger("submit");
     expect(onUpdate).toHaveBeenCalledTimes(1);
   });
+  it("should block submit when value is empty", async () => {
+    const wrapper = shallowMount(EditableText);
+    const button = wrapper.get("button");
+    await button.trigger("click");
+    await wrapper.get("input[type='text']").trigger("blur");
+    await wrapper.get("input[type='submit']").trigger("click");
+    expect(wrapper.get("input")).toBeTruthy();
+  });
 });
