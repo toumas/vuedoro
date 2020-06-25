@@ -24,7 +24,6 @@ export const states = {
   break: "break",
   bigBreak: "bigBreak"
 };
-let interval;
 
 export default {
   components: {
@@ -54,10 +53,16 @@ export default {
       }
     };
   },
+  created() {
+    this.interval = undefined;
+  },
+  beforeDestroy() {
+    this.stopTimer();
+  },
   watch: {
     running: function() {
-      if (typeof interval === "undefined" && this.running) {
-        interval = setInterval(() => {
+      if (typeof this.interval === "undefined" && this.running) {
+        this.interval = setInterval(() => {
           if (this.time < this.minutesToMilliseconds(this.config[this.state])) {
             this.time = this.time + 1000;
             if (this.timeLeft <= 0) {
@@ -65,7 +70,7 @@ export default {
             }
           }
         }, 1000);
-      } else if (typeof interval === "number" && !this.running) {
+      } else if (typeof this.interval === "number" && !this.running) {
         this.stopTimer();
       }
     }
@@ -95,8 +100,8 @@ export default {
     },
     stopTimer() {
       this.running = false;
-      clearInterval(interval);
-      interval = undefined;
+      clearInterval(this.interval);
+      this.interval = undefined;
     },
     proceedToPreviousState() {
       let previousState;
