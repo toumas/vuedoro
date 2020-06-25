@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <EditableText
+    <Entry
       v-for="entry in entries"
       v-bind:key="entry.id"
       v-bind:id="entry.id"
@@ -19,11 +19,13 @@
 <script>
 import { uuidv4 } from "./uuid";
 import EditableText from "./components/EditableText.vue";
+import Entry from "./components/Entry.vue";
 
 export default {
   name: "App",
   components: {
     EditableText,
+    Entry,
   },
   data() {
     return { entries: {} };
