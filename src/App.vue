@@ -6,6 +6,8 @@
       v-bind:id="entry.id"
       v-bind:value="entry.title"
       v-bind:onUpdate="onUpdate"
+      v-bind:active="entry.id === activeEntry"
+      v-bind:onToggleTimer="onToggleTimer"
     />
     <EditableText
       value="Click here to add new entry"
@@ -25,10 +27,10 @@ export default {
   name: "App",
   components: {
     EditableText,
-    Entry,
+    Entry
   },
   data() {
-    return { entries: {} };
+    return { entries: {}, activeEntry: "" };
   },
   methods: {
     getInitialValue() {
@@ -40,6 +42,13 @@ export default {
     },
     onUpdate(id, newValue) {
       this.entries[id].title = newValue;
+    },
+    onToggleTimer(id, running) {
+      if (running) {
+        this.activeEntry = id;
+      } else {
+        this.activeEntry = "";
+      }
     }
   }
 };

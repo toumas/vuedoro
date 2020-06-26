@@ -33,7 +33,12 @@ export default {
     id: String,
     getInitialValue: Function,
     onUpdate: Function,
-    value: String
+    value: String,
+    active: Boolean,
+    onToggleTimer: {
+      type: Function,
+      default: function() {}
+    }
   },
   data() {
     return {
@@ -73,6 +78,11 @@ export default {
       } else if (typeof this.interval === "number" && !this.running) {
         this.stopTimer();
       }
+    },
+    active: function(nextActive, previousActive) {
+      if (nextActive !== previousActive) {
+        this.running = nextActive;
+      }
     }
   },
   computed: {
@@ -97,6 +107,7 @@ export default {
   methods: {
     toggleTimer() {
       this.running = !this.running;
+      this.onToggleTimer(this.id, this.running);
     },
     stopTimer() {
       this.running = false;
