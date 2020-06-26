@@ -20,13 +20,14 @@ describe("Entry", () => {
     await button.trigger("click");
     expect(button.text()).toBe("Pause working");
   });
-  /* it("should prompt for break after working session", async () => {
+  it("should prompt for break after working session", async () => {
     const wrapper = shallowMount(Entry, {sync: false});
-    await wrapper.get("button").trigger("click");
+    const button = wrapper.get(".toggle")
+    await button.trigger("click");
     jest.runAllTimers();
     await Vue.nextTick();
-    expect(wrapper.text()).toBe("Start break");
-  }); */
+    expect(button.text()).toBe("Start break");
+  });
   it("should go from working to break state", async () => {
     const wrapper = shallowMount(Entry);
     await wrapper.get(".next").trigger("click");
