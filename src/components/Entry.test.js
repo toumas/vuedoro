@@ -5,14 +5,18 @@ import Entry, { states } from "./Entry.vue";
 describe("Entry", () => {
   beforeEach(() => {
     jest.useFakeTimers();
-  })
+  });
   it("should render without errors", () => {
     const wrapper = shallowMount(Entry);
     expect(wrapper.text()).toBeDefined();
   });
   it("should render pause button when timer is running", async () => {
-    const wrapper = shallowMount(Entry);
-    const button = wrapper.get("button");
+    const wrapper = shallowMount(Entry, {
+      propsData: {
+        active: true
+      }
+    });
+    const button = wrapper.get(".toggle");
     await button.trigger("click");
     expect(button.text()).toBe("Pause working");
   });
@@ -77,15 +81,22 @@ describe("Entry", () => {
     expect(wrapper.get(".toggle").text()).toBe("Start break");
   });
   it("should track time spent", async () => {
-    const wrapper = shallowMount(Entry);
+    const wrapper = shallowMount(Entry, {
+      propsData: {
+        active: true
+      }
+    });
     const button = wrapper.get(".toggle");
     await button.trigger("click");
     jest.advanceTimersByTime(1000);
     expect(wrapper.vm.$data.time).toBe(1000);
   });
-  /* it("should stop timer", async () => {
-    jest.useFakeTimers("modern");
-    const wrapper = shallowMount(Entry);
+  it("should stop timer", async () => {
+    const wrapper = shallowMount(Entry, {
+      propsData: {
+        active: true
+      }
+    });
     const button = wrapper.get(".toggle");
     await button.trigger("click");
     jest.advanceTimersByTime(1000);
@@ -93,5 +104,21 @@ describe("Entry", () => {
     // there shouldn't be any pending timers, if there are expect should fail
     jest.runOnlyPendingTimers();
     expect(wrapper.vm.$data.time).toBe(1000);
-  }); */
+  });
+  it("should stop timer when entry becomes inactive", async () => {
+    const wrapper = shallowMount(Entry, {
+      propsData: {
+        active: true,
+      },
+    });
+    const button = wrapper.get(".toggle");
+    await button.trigger("click");
+    jest.advanceTimersByTime(1000);
+    await wrapper.setProps({
+      active: false,
+    });
+    // there shouldn't be any pending timers, if there are expect should fail
+    jest.runOnlyPendingTimers();
+    expect(wrapper.vm.$data.time).toBe(1000);
+  });
 });
