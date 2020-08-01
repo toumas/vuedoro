@@ -37,6 +37,12 @@ export const states = {
   bigBreak: "bigBreak"
 };
 
+export const messages = {
+  [states.working]: "Time to work",
+  [states.break]: "It's time for a short break",
+  [states.bigBreak]: "Time for a refreshment! Long break starting now"
+};
+
 export default {
   components: {
     EditableText
@@ -67,7 +73,8 @@ export default {
         break: 5,
         bigBreak: 15,
         sessionsBeforeBigBreak: 4
-      }
+      },
+      notification: undefined
     };
   },
   created() {
@@ -117,6 +124,14 @@ export default {
     }
   },
   methods: {
+    async notify() {
+      this.notification?.close();
+      const result = await Notification.requestPermission();
+      if (result === "granted") {
+        const body = messages[this.state];
+        this.notification = new Notification("Vuedoro", { body });
+      }
+    },
     toggleTimer() {
       this.running = !this.running;
       this.onToggleTimer(this.id, this.running);
@@ -166,6 +181,7 @@ export default {
 
       this.time = 0;
       this.stopTimer();
+      this.notify();
     },
     minutesToMilliseconds(minutes) {
       return minutes * 60 * 1000;
