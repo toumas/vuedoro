@@ -7,11 +7,23 @@
       v-bind:onUpdate="onUpdate"
       v-bind:key="Date.now()"
     />
-    <button class="toggle" v-on:click="toggleTimer">{{this.running ? "Pause" : "Start"}} {{state}}</button>
-    <div>Time left: {{timeLeft | time}}</div>
-    <div>Sessions left: {{state === 'bigBreak' ? 0 : config.sessionsBeforeBigBreak - counters.working % config.sessionsBeforeBigBreak}}</div>
-    <div>Total: {{totalTime | time(totalTime, true)}}</div>
-    <button class="previous" v-on:click="proceedToPreviousState">Previous</button>
+    <button class="toggle" v-on:click="toggleTimer">
+      {{ this.running ? "Pause" : "Start" }} {{ state }}
+    </button>
+    <div>Time left: {{ timeLeft | time }}</div>
+    <div>
+      Sessions left:
+      {{
+        state === "bigBreak"
+          ? 0
+          : config.sessionsBeforeBigBreak -
+            (counters.working % config.sessionsBeforeBigBreak)
+      }}
+    </div>
+    <div>Total: {{ totalTime | time(totalTime, true) }}</div>
+    <button class="previous" v-on:click="proceedToPreviousState">
+      Previous
+    </button>
     <button class="next" v-on:click="proceedToNextState">Next</button>
   </div>
 </template>
@@ -167,5 +179,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>
