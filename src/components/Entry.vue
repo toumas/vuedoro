@@ -55,6 +55,7 @@ export default {
     onUpdate: Function,
     value: String,
     active: Boolean,
+    config: Object,
     onToggleTimer: {
       type: Function,
       default: function() {}
@@ -69,12 +70,6 @@ export default {
         [states.working]: 0,
         [states.break]: 0,
         [states.bigBreak]: 0
-      },
-      config: {
-        working: 25,
-        break: 5,
-        bigBreak: 15,
-        sessionsBeforeBigBreak: 4
       },
       notification: undefined
     };

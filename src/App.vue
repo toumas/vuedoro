@@ -8,6 +8,7 @@
       v-bind:onUpdate="onUpdate"
       v-bind:active="entry.id === activeEntry"
       v-bind:onToggleTimer="onToggleTimer"
+      v-bind:config="config"
     />
     <EditableText
       value="Click here to add new entry"
@@ -32,7 +33,16 @@ export default {
   },
   mixins: [saveState],
   data() {
-    return { entries: {}, activeEntry: "" };
+    return {
+      entries: {},
+      activeEntry: "",
+      config: {
+        working: 25,
+        break: 5,
+        bigBreak: 15,
+        sessionsBeforeBigBreak: 4
+      }
+    };
   },
   methods: {
     getSaveStateConfig() {
