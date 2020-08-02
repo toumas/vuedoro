@@ -29,6 +29,7 @@
 </template>
 
 <script>
+import saveState from "vue-save-state";
 import EditableText from "./EditableText.vue";
 
 export const states = {
@@ -47,6 +48,7 @@ export default {
   components: {
     EditableText
   },
+  mixins: [saveState],
   props: {
     id: String,
     getInitialValue: Function,
@@ -124,6 +126,11 @@ export default {
     }
   },
   methods: {
+    getSaveStateConfig() {
+      return {
+        cacheKey: this.id
+      };
+    },
     async notify() {
       this.notification?.close();
       const result = await Notification.requestPermission();

@@ -19,6 +19,7 @@
 </template>
 
 <script>
+import saveState from "vue-save-state";
 import { uuidv4 } from "./uuid";
 import EditableText from "./components/EditableText.vue";
 import Entry from "./components/Entry.vue";
@@ -29,10 +30,16 @@ export default {
     EditableText,
     Entry
   },
+  mixins: [saveState],
   data() {
     return { entries: {}, activeEntry: "" };
   },
   methods: {
+    getSaveStateConfig() {
+      return {
+        cacheKey: "Vuedoro"
+      };
+    },
     getInitialValue() {
       return "";
     },
@@ -54,5 +61,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>
