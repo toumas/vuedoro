@@ -1,5 +1,6 @@
 import "regenerator-runtime";
 import Vue from "vue";
+import "./main.css";
 import App from "./App.vue";
 
 Vue.config.productionTip = false;

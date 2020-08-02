@@ -10,6 +10,7 @@
     "test:watch": "jest --watchAll"
   },
   "dependencies": {
+    "tailwindcss": "^1.6.1",
     "vue": "^2.6.11",
     "vue-save-state": "^1.2.0"
   },
@@ -50,11 +51,6 @@
     "rules": {},
     "parserOptions": {
       "parser": "babel-eslint"
-    }
-  },
-  "postcss": {
-    "plugins": {
-      "autoprefixer": {}
     }
   },
   "browserslist": [
