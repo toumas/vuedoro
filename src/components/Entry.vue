@@ -25,6 +25,7 @@
       Previous
     </button>
     <button class="next" v-on:click="proceedToNextState">Next</button>
+    <button v-on:click="deleteEntry(id)">Delete</button>
   </div>
 </template>
 
@@ -53,6 +54,7 @@ export default {
     id: String,
     getInitialValue: Function,
     onUpdate: Function,
+    deleteEntry: Function,
     value: String,
     active: Boolean,
     config: Object,

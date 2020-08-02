@@ -9,6 +9,7 @@
       v-bind:active="entry.id === activeEntry"
       v-bind:onToggleTimer="onToggleTimer"
       v-bind:config="config"
+      v-bind:deleteEntry="deleteEntry"
     />
     <EditableText
       value="Click here to add new entry"
@@ -56,6 +57,17 @@ export default {
     addNewEntry(_id, title) {
       const id = uuidv4();
       this.entries = { ...this.entries, [id]: { id, title } };
+    },
+    deleteEntry(id) {
+      const result = confirm(
+        `Are you sure you want to delete ${this.entries[id].title}?`
+      );
+      if (result) {
+        const copy = Object.assign({}, { ...this.entries });
+        delete copy[id];
+        localStorage.removeItem(id);
+        this.entries = copy;
+      }
     },
     onUpdate(id, newValue) {
       this.entries[id].title = newValue;

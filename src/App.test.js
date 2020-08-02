@@ -1,4 +1,4 @@
-import { shallowMount, mount } from "@vue/test-utils";
+import { shallowMount } from "@vue/test-utils";
 import App from "./App.vue";
 import EditableText from "./components/EditableText.vue";
 import Entry from "./components/Entry.vue";
@@ -27,5 +27,23 @@ describe("App", () => {
     });
     wrapper.findComponent(Entry).vm.$props.onUpdate("entry1", "bar");
     expect(wrapper.vm.$data.entries.entry1.title).toBe("bar");
+  });
+  it("should delete entry", () => {
+    const wrapper = shallowMount(App, {
+      data() {
+        return { entries: { entry1: { id: "entry1", title: "foo" } } };
+      }
+    });
+    wrapper.vm.deleteEntry("entry1");
+    expect(wrapper.vm.$data).toEqual({
+      entries: {},
+      activeEntry: "",
+      config: {
+        bigBreak: 15,
+        break: 5,
+        sessionsBeforeBigBreak: 4,
+        working: 25
+      }
+    });
   });
 });
