@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" class="p-4 max-w-4xl grid grid-flow-row row-gap-8">
     <Entry
       v-for="entry in entries"
       v-bind:key="entry.id"

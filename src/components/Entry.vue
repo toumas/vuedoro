@@ -1,31 +1,60 @@
 <template>
   <div>
-    <EditableText
-      v-bind:id="id"
-      v-bind:value="value"
-      v-bind:getInitialValue="getInitialValue"
-      v-bind:onUpdate="onUpdate"
-      v-bind:key="Date.now()"
-    />
-    <button class="toggle" v-on:click="toggleTimer">
-      {{ this.running ? "Pause" : "Start" }} {{ state }}
-    </button>
-    <div>Time left: {{ timeLeft | time }}</div>
-    <div>
-      Sessions left:
-      {{
-        state === "bigBreak"
-          ? 0
-          : config.sessionsBeforeBigBreak -
-            (counters.working % config.sessionsBeforeBigBreak)
-      }}
+    <div
+      class="grid grid-cols-8 grid-rows-3 grid-flow-row items-center md:grid-rows-1 md:grid-cols-12 md:items-start"
+    >
+      <EditableText
+        class="col-span-8 md:col-span-3"
+        v-bind:id="id"
+        v-bind:value="value"
+        v-bind:getInitialValue="getInitialValue"
+        v-bind:onUpdate="onUpdate"
+        v-bind:key="Date.now()"
+      />
+      <button
+        class="toggle text-left row-start-2 col-span-2 md:col-span-1 md:row-start-auto md:text-center"
+        v-on:click="toggleTimer"
+      >
+        {{ this.running ? "&#9208;&#65039;" : "&#9654;" }}
+      </button>
+      <button
+        class="previous text-left row-start-2 col-span-2 md:col-span-1 md:row-start-auto md:text-center"
+        v-on:click="proceedToPreviousState"
+      >
+        &#9198;&#65039;
+      </button>
+      <span
+        class="row-start-2 col-span-3 md:col-span-1 md:row-start-auto md:text-center"
+        >{{ timeLeft | time }}</span
+      >
+      <button
+        class="next row-start-2 col-span-2 md:col-span-1 md:row-start-auto"
+        v-on:click="proceedToNextState"
+      >
+        &#9197;&#65039;
+      </button>
+      <span
+        class="break-all row-start-3 col-span-4 md:row-start-auto md:col-span-2"
+      >
+        Sessions left:
+        {{
+          state === "bigBreak"
+            ? 0
+            : config.sessionsBeforeBigBreak -
+              (counters.working % config.sessionsBeforeBigBreak)
+        }}
+      </span>
+      <span
+        class="break-all row-start-3 col-span-3 md:row-start-auto md:col-span-2"
+        >Total: {{ totalTime | time(totalTime, true) }}</span
+      >
+      <button
+        class="row-start-3 md:row-start-auto"
+        v-on:click="deleteEntry(id)"
+      >
+        &#x1F5D1;
+      </button>
     </div>
-    <div>Total: {{ totalTime | time(totalTime, true) }}</div>
-    <button class="previous" v-on:click="proceedToPreviousState">
-      Previous
-    </button>
-    <button class="next" v-on:click="proceedToNextState">Next</button>
-    <button v-on:click="deleteEntry(id)">Delete</button>
   </div>
 </template>
 

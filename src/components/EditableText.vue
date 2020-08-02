@@ -1,11 +1,20 @@
 <template>
   <div>
     <form ref="form" v-if="editing" v-on:submit.prevent="update">
-      <input type="text" ref="input" v-on:blur="update" v-model="newValue" required/>
+      <input
+        class="bg-teal-900 border-solid border-b-2 border-red-900"
+        type="text"
+        ref="input"
+        v-on:blur="update"
+        v-model="newValue"
+        required
+      />
       <!-- submit is used to trigger native validation messages when input is blurred -->
       <input ref="submit" type="submit" />
     </form>
-    <button v-else v-on:click="edit">{{value}}</button>
+    <button v-else class="text-left font-semibold" v-on:click="edit">
+      {{ value }}
+    </button>
   </div>
 </template>
 
