@@ -3,13 +3,13 @@
     <Entry
       v-for="entry in entries"
       v-bind:key="entry.id"
-      v-bind:id="entry.id"
-      v-bind:value="entry.title"
-      v-bind:onUpdate="onUpdate"
       v-bind:active="entry.id === activeEntry"
-      v-bind:onToggleTimer="onToggleTimer"
-      v-bind:config="config"
       v-bind:deleteEntry="deleteEntry"
+      v-bind:id="entry.id"
+      v-bind:onActivate="onActivate"
+      v-bind:onUpdate="onUpdate"
+      v-bind:timeSpent="entry.timeSpent"
+      v-bind:value="entry.title"
     />
     <EditableText
       value="Click here to add new entry"
@@ -17,6 +17,29 @@
       v-bind:onUpdate="addNewEntry"
       v-bind:key="Date.now()"
     />
+    <footer class="fixed bottom-0">
+      <button v-on:click="toggleTimer">
+        {{ this.running ? "&#9208;&#65039;" : "&#9654;" }}
+      </button>
+      <button class="" v-on:click="proceedToPreviousState">
+        &#9198;&#65039;
+      </button>
+      <span>{{ state }}</span>
+      <span class="">{{ timeLeft | time }}</span>
+      <button class="" v-on:click="proceedToNextState">
+        &#9197;&#65039;
+      </button>
+      <span>
+        Sessions left:
+        {{
+          state === "bigBreak"
+            ? 0
+            : config.sessionsBeforeBigBreak -
+              (counters.working % config.sessionsBeforeBigBreak)
+        }}
+      </span>
+      <span>Total: {{ totalTime | time(totalTime, true) }}</span>
+    </footer>
   </div>
 </template>
 
@@ -26,6 +49,22 @@ import { uuidv4 } from "./uuid";
 import EditableText from "./components/EditableText.vue";
 import Entry from "./components/Entry.vue";
 
+export const states = {
+  bigBreak: "bigBreak",
+  break: "break",
+  working: "working"
+};
+
+export const messages = {
+  [states.bigBreak]: "Time for a refreshment! Long break starting now",
+  [states.break]: "It's time for a short break",
+  [states.working]: "Time to work"
+};
+
+function minutesToMilliseconds(minutes) {
+  return minutes * 60 * 1000;
+}
+
 export default {
   name: "App",
   components: {
@@ -33,30 +72,54 @@ export default {
     Entry
   },
   mixins: [saveState],
+  created() {
+    this.interval = undefined;
+  },
+  beforeDestroy() {
+    this.stopTimer();
+  },
   data() {
     return {
-      entries: {},
       activeEntry: "",
       config: {
-        working: 25,
-        break: 5,
         bigBreak: 15,
-        sessionsBeforeBigBreak: 4
-      }
+        break: 5,
+        sessionsBeforeBigBreak: 4,
+        working: 25
+      },
+      counters: {
+        [states.working]: 0,
+        [states.break]: 0,
+        [states.bigBreak]: 0
+      },
+      entries: {},
+      notification: undefined,
+      pristine: true,
+      running: false,
+      state: "working",
+      time: 0
     };
   },
+  computed: {
+    timeLeft: function() {
+      return minutesToMilliseconds(this.config[this.state]) - this.time;
+    },
+    totalTime: function() {
+      return (
+        minutesToMilliseconds(this.config[states.working]) *
+          this.counters.working +
+        minutesToMilliseconds(this.config[states.break]) *
+          this.counters[states.break] +
+        minutesToMilliseconds(this.config[states.bigBreak]) *
+          this.counters[states.bigBreak] +
+        this.time
+      );
+    }
+  },
   methods: {
-    getSaveStateConfig() {
-      return {
-        cacheKey: "Vuedoro"
-      };
-    },
-    getInitialValue() {
-      return "";
-    },
     addNewEntry(_id, title) {
       const id = uuidv4();
-      this.entries = { ...this.entries, [id]: { id, title } };
+      this.entries = { ...this.entries, [id]: { id, title, timeSpent: 0 } };
     },
     deleteEntry(id) {
       const result = confirm(
@@ -67,20 +130,110 @@ export default {
         delete copy[id];
         localStorage.removeItem(id);
         this.entries = copy;
+        if (this.activeEntry === id) {
+          this.stopTimer();
+          this.activeEntry = "";
+        }
       }
+    },
+    getInitialValue() {
+      return "";
+    },
+    getSaveStateConfig() {
+      return {
+        cacheKey: "Vuedoro"
+      };
+    },
+    async notify() {
+      this.notification?.close();
+      const result = await Notification.requestPermission();
+      if (result === "granted") {
+        const body = messages[this.state];
+        this.notification = new Notification("Vuedoro", { body });
+      }
+    },
+    onActivate(id) {
+      this.activeEntry = id;
     },
     onUpdate(id, newValue) {
       this.entries[id].title = newValue;
     },
-    onToggleTimer(id, running) {
-      if (running) {
-        this.activeEntry = id;
+    proceedToNextState() {
+      this.counters[this.state] = this.counters[this.state] + 1;
+
+      if (
+        this.counters[states.working] % this.config.sessionsBeforeBigBreak ===
+          0 &&
+        this.counters[states.working] > 0 &&
+        this.state !== states.bigBreak
+      ) {
+        this.state = states.bigBreak;
+      } else if (this.state === states.working) {
+        this.state = states.break;
       } else {
-        this.activeEntry = "";
+        this.state = states.working;
       }
+
+      this.time = 0;
+      this.stopTimer();
+      this.notify();
+    },
+    proceedToPreviousState() {
+      let previousState;
+      if (this.state === states.bigBreak || this.state === states.break) {
+        previousState = states.working;
+      } else if (
+        this.counters[states.working] % this.config.sessionsBeforeBigBreak ===
+          0 &&
+        this.counters[states.working] > 0 &&
+        this.state === states.working
+      ) {
+        previousState = states.bigBreak;
+      } else {
+        previousState = states.break;
+      }
+
+      if (this.counters[previousState] > 0) {
+        this.counters[previousState] = this.counters[previousState] - 1;
+        this.state = previousState;
+        this.time = 0;
+        this.stopTimer();
+      }
+    },
+    stopTimer() {
+      this.running = false;
+      clearInterval(this.interval);
+      this.interval = undefined;
+    },
+    toggleTimer() {
+      if (this.activeEntry.length === 0) {
+        alert(
+          "No entry selected. To start the timer you must select an entry first."
+        );
+        return;
+      }
+      this.running = !this.running;
+    }
+  },
+  watch: {
+    running: function() {
+      if (typeof this.interval === "undefined" && this.running) {
+        this.interval = setInterval(() => {
+          if (this.time < minutesToMilliseconds(this.config[this.state])) {
+            this.time = this.time + 1000;
+
+            if (this.timeLeft <= 0) {
+              this.proceedToNextState();
+            }
+          }
+        }, 1000);
+      } else if (typeof this.interval === "number" && !this.running) {
+        this.stopTimer();
+      }
+    },
+    time: function() {
+      this.entries[this.activeEntry].timeSpent += 1000;
     }
   }
 };
 </script>
-
-<style></style>
