@@ -1,5 +1,5 @@
 <template>
-  <div id="app" class="p-4 max-w-4xl grid grid-flow-row row-gap-8">
+  <div id="app" class="text-xl p-4 max-w-4xl grid grid-flow-row row-gap-8">
     <Entry
       v-for="entry in entries"
       v-bind:key="entry.id"
@@ -17,18 +17,10 @@
       v-bind:onUpdate="addNewEntry"
       v-bind:key="Date.now()"
     />
-    <footer class="fixed bottom-0">
-      <button v-on:click="toggleTimer">
-        {{ this.running ? "&#9208;&#65039;" : "&#9654;" }}
-      </button>
-      <button class="" v-on:click="proceedToPreviousState">
-        &#9198;&#65039;
-      </button>
+    <footer
+      class="fixed bottom-0 grid grid-cols-4 grid-rows-2 items-end justify-start"
+    >
       <span>{{ state }}</span>
-      <span class="">{{ timeLeft | time }}</span>
-      <button class="" v-on:click="proceedToNextState">
-        &#9197;&#65039;
-      </button>
       <span>
         Sessions left:
         {{
@@ -38,7 +30,19 @@
               (counters.working % config.sessionsBeforeBigBreak)
         }}
       </span>
-      <span>Total: {{ totalTime | time(totalTime, true) }}</span>
+      <span class="col-span-2"
+        >Total: {{ totalTime | time(totalTime, true) }}</span
+      >
+      <button v-on:click="toggleTimer" class="row-start-2">
+        {{ this.running ? "&#9208;&#65039;" : "&#9654;" }}
+      </button>
+      <button class="row-start-2" v-on:click="proceedToPreviousState">
+        &#9198;&#65039;
+      </button>
+      <span class="row-start-2">{{ timeLeft | time }}</span>
+      <button class="" v-on:click="proceedToNextState">
+        &#9197;&#65039;
+      </button>
     </footer>
   </div>
 </template>

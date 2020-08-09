@@ -11,4 +11,4 @@ Vue.filter("time", function(value, hours = false) {
 
 new Vue({
   render: (h) => h(App)
-}).$mount("#app");
+}).$mount("#root");
