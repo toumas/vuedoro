@@ -1,30 +1,27 @@
 <template>
   <div>
-    <div
-      class="grid grid-cols-8 grid-rows-3 grid-flow-row items-center md:grid-rows-1 md:grid-cols-12 md:items-start"
-    >
+    <div class="custom-grid grid-rows-2 grid-cols-3 col-gap-2 md:grid-rows-1">
+      <div>
+        <input
+          class=""
+          type="checkbox"
+          v-bind:checked="active"
+          v-on:click="activate"
+        />
+      </div>
       <EditableText
-        class="col-span-8 md:col-span-3"
+        class=""
         v-bind:id="id"
         v-bind:value="value"
         v-bind:getInitialValue="getInitialValue"
         v-bind:onUpdate="onUpdate"
         v-bind:key="Date.now()"
       />
-      <button
-        class="toggle text-left row-start-2 col-span-2 md:col-span-1 md:row-start-auto md:text-center"
-        v-on:click="activate"
-      >
-        {{ this.active ? "deactivate" : "activate" }}
-      </button>
       <span
-        class="break-all row-start-3 col-span-3 md:row-start-auto md:col-span-2"
-        >Total: {{ timeSpent | time(timeSpent, true) }}</span
+        class="text-left row-start-2 col-start-2 md:row-start-1 md:col-start-3"
+        >{{ timeSpent | time(timeSpent, true) }}</span
       >
-      <button
-        class="row-start-3 md:row-start-auto"
-        v-on:click="deleteEntry(id)"
-      >
+      <button class="text-right md:col-start-4" v-on:click="deleteEntry(id)">
         &#x1F5D1;
       </button>
     </div>
@@ -62,3 +59,15 @@ export default {
   }
 };
 </script>
+
+<style>
+.custom-grid {
+  display: grid;
+  grid-template-columns: 16px 1fr 30px;
+}
+@screen md {
+  .custom-grid {
+    grid-template-columns: 16px 100fr 1fr 30px;
+  }
+}
+</style>

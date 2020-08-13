@@ -1,22 +1,24 @@
 <template>
   <div id="app" class="text-xl max-w-4xl">
-    <Entry
-      v-for="entry in entries"
-      v-bind:key="entry.id"
-      v-bind:active="entry.id === activeEntry"
-      v-bind:deleteEntry="deleteEntry"
-      v-bind:id="entry.id"
-      v-bind:onActivate="onActivate"
-      v-bind:onUpdate="onUpdate"
-      v-bind:timeSpent="entry.timeSpent"
-      v-bind:value="entry.title"
-    />
-    <EditableText
-      value="Click here to add new entry"
-      v-bind:getInitialValue="getInitialValue"
-      v-bind:onUpdate="addNewEntry"
-      v-bind:key="Date.now()"
-    />
+    <main class="p-4">
+      <Entry
+        v-for="entry in entries"
+        v-bind:key="entry.id"
+        v-bind:active="entry.id === activeEntry"
+        v-bind:deleteEntry="deleteEntry"
+        v-bind:id="entry.id"
+        v-bind:onActivate="onActivate"
+        v-bind:onUpdate="onUpdate"
+        v-bind:timeSpent="entry.timeSpent"
+        v-bind:value="entry.title"
+      />
+      <EditableText
+        value="Click here to add new entry"
+        v-bind:getInitialValue="getInitialValue"
+        v-bind:onUpdate="addNewEntry"
+        v-bind:key="Date.now()"
+      />
+    </main>
     <footer
       class="fixed bottom-0 p-4 w-full max-w-4xl grid grid-rows-3 grid-cols-5 lg:grid-rows-1 lg:grid-cols-8"
     >
