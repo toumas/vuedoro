@@ -1,5 +1,5 @@
 <template>
-  <div id="app" class="text-xl p-4 max-w-4xl grid grid-flow-row row-gap-8">
+  <div id="app" class="text-xl max-w-4xl">
     <Entry
       v-for="entry in entries"
       v-bind:key="entry.id"
@@ -18,10 +18,10 @@
       v-bind:key="Date.now()"
     />
     <footer
-      class="fixed bottom-0 grid grid-cols-4 grid-rows-2 items-end justify-start"
+      class="fixed bottom-0 p-4 w-full max-w-4xl grid grid-rows-3 grid-cols-5 lg:grid-rows-1 lg:grid-cols-8"
     >
-      <span>{{ state }}</span>
-      <span>
+      <span class="col-start-1">{{ state }}</span>
+      <span class="col-start-4 col-span-2 text-right lg:col-start-7">
         Sessions left:
         {{
           state === "bigBreak"
@@ -30,17 +30,29 @@
               (counters.working % config.sessionsBeforeBigBreak)
         }}
       </span>
-      <span class="col-span-2"
-        >Total: {{ totalTime | time(totalTime, true) }}</span
+      <span class="row-start-2 lg:row-start-1 lg:col-start-2">{{
+        timeLeft | time
+      }}</span>
+      <span
+        class="row-start-2 col-start-4 col-span-2 text-right lg:row-start-1 lg:col-start-6 lg:col-span-1"
+        >{{ totalTime | time(totalTime, true) }}</span
       >
-      <button v-on:click="toggleTimer" class="row-start-2">
-        {{ this.running ? "&#9208;&#65039;" : "&#9654;" }}
-      </button>
-      <button class="row-start-2" v-on:click="proceedToPreviousState">
+      <button
+        class="row-start-3 col-start-2 lg:row-start-1 lg:col-start-3"
+        v-on:click="proceedToPreviousState"
+      >
         &#9198;&#65039;
       </button>
-      <span class="row-start-2">{{ timeLeft | time }}</span>
-      <button class="" v-on:click="proceedToNextState">
+      <button
+        class="row-start-3 col-start-3 lg:row-start-1 lg:col-start-4"
+        v-on:click="toggleTimer"
+      >
+        {{ this.running ? "&#9208;&#65039;" : "&#9654;" }}
+      </button>
+      <button
+        class="row-start-3 col-start-4 lg:row-start-1 lg:col-start-5"
+        v-on:click="proceedToNextState"
+      >
         &#9197;&#65039;
       </button>
     </footer>
