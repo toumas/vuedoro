@@ -40,10 +40,13 @@
         >{{ totalTime | time(totalTime, true) }}</span
       >
       <button
-        class="previous row-start-3 col-start-2 lg:row-start-1 lg:col-start-3"
+        class="previous row-start-3 col-start-1 lg:row-start-1 lg:col-start-3"
         v-on:click="proceedToPreviousState"
       >
         &#9198;&#65039;
+      </button>
+      <button class="row-start-3 col-start-2" v-on:click="reverse">
+        &#9194;
       </button>
       <button
         class="toggle row-start-3 col-start-3 lg:row-start-1 lg:col-start-4"
@@ -51,8 +54,11 @@
       >
         {{ this.running ? "&#9208;&#65039;" : "&#9654;" }}
       </button>
+      <button class="row-start-3 col-start-4" v-on:click="forward">
+        &#9193;
+      </button>
       <button
-        class="next row-start-3 col-start-4 lg:row-start-1 lg:col-start-5"
+        class="next row-start-3 col-start-5 lg:row-start-1 lg:col-start-5"
         v-on:click="proceedToNextState"
       >
         &#9197;&#65039;
@@ -154,8 +160,31 @@ export default {
         }
       }
     },
+    forward() {
+      if (this.activeEntry === "") {
+        alert("Can not forward time. Select an entry first.");
+        return;
+      }
+      this.entries[this.activeEntry].timeSpent =
+        this.entries[this.activeEntry].timeSpent + this.timeLeft;
+      this.proceedToNextState();
+    },
     getInitialValue() {
       return "";
+    },
+    getPreviousState() {
+      if (this.state === states.bigBreak || this.state === states.break) {
+        return states.working;
+      } else if (
+        this.counters[states.working] % this.config.sessionsBeforeBigBreak ===
+          0 &&
+        this.counters[states.working] > 0 &&
+        this.state === states.working
+      ) {
+        return states.bigBreak;
+      } else {
+        return states.break;
+      }
     },
     getSaveStateConfig() {
       return {
@@ -202,25 +231,26 @@ export default {
       this.notify();
     },
     proceedToPreviousState() {
-      let previousState;
-      if (this.state === states.bigBreak || this.state === states.break) {
-        previousState = states.working;
-      } else if (
-        this.counters[states.working] % this.config.sessionsBeforeBigBreak ===
-          0 &&
-        this.counters[states.working] > 0 &&
-        this.state === states.working
-      ) {
-        previousState = states.bigBreak;
-      } else {
-        previousState = states.break;
-      }
+      let previousState = this.getPreviousState();
 
       if (this.counters[previousState] > 0) {
         this.counters[previousState] = this.counters[previousState] - 1;
         this.state = previousState;
         this.time = 0;
         this.stopTimer();
+      }
+    },
+    reverse() {
+      if (this.activeEntry === "") {
+        alert("Can not reverse time. Select an entry first.");
+        return;
+      }
+      let previousState = this.getPreviousState();
+      if (this.entries[this.activeEntry].timeSpent > 0) {
+        this.entries[this.activeEntry].timeSpent =
+          this.entries[this.activeEntry].timeSpent -
+          this.config[previousState] * 60 * 1000;
+        this.proceedToPreviousState();
       }
     },
     stopTimer() {
