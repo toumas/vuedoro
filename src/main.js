@@ -5,9 +5,11 @@ import App from "./App.vue";
 
 Vue.config.productionTip = false;
 
-Vue.filter("time", function(value, hours = false) {
+export function time(value, hours = false) {
   return new Date(value).toISOString().slice(hours ? 11 : 14, 19);
-});
+}
+
+Vue.filter("time", time);
 
 new Vue({
   render: (h) => h(App)

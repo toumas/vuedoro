@@ -40,19 +40,19 @@
         >{{ totalTime | time(totalTime, true) }}</span
       >
       <button
-        class="row-start-3 col-start-2 lg:row-start-1 lg:col-start-3"
+        class="previous row-start-3 col-start-2 lg:row-start-1 lg:col-start-3"
         v-on:click="proceedToPreviousState"
       >
         &#9198;&#65039;
       </button>
       <button
-        class="row-start-3 col-start-3 lg:row-start-1 lg:col-start-4"
+        class="toggle row-start-3 col-start-3 lg:row-start-1 lg:col-start-4"
         v-on:click="toggleTimer"
       >
         {{ this.running ? "&#9208;&#65039;" : "&#9654;" }}
       </button>
       <button
-        class="row-start-3 col-start-4 lg:row-start-1 lg:col-start-5"
+        class="next row-start-3 col-start-4 lg:row-start-1 lg:col-start-5"
         v-on:click="proceedToNextState"
       >
         &#9197;&#65039;
@@ -114,7 +114,7 @@ export default {
       notification: undefined,
       pristine: true,
       running: false,
-      state: "working",
+      state: states.working,
       time: 0
     };
   },
@@ -135,7 +135,7 @@ export default {
     }
   },
   methods: {
-    addNewEntry(_id, title) {
+    addNewEntry(title) {
       const id = uuidv4();
       this.entries = { ...this.entries, [id]: { id, title, timeSpent: 0 } };
     },
@@ -171,7 +171,12 @@ export default {
       }
     },
     onActivate(id) {
-      this.activeEntry = id;
+      if (this.activeEntry === id) {
+        this.stopTimer();
+        this.activeEntry = "";
+      } else {
+        this.activeEntry = id;
+      }
     },
     onUpdate(id, newValue) {
       this.entries[id].title = newValue;

@@ -54,7 +54,11 @@ export default {
        */
       if (this.editing) {
         this.editing = false;
-        this.onUpdate(this.id, this.newValue);
+        if (typeof this.id === "undefined") {
+          this.onUpdate(this.newValue);
+        } else {
+          this.onUpdate(this.id, this.newValue);
+        }
       }
     }
   }
