@@ -20,10 +20,10 @@
       />
     </main>
     <footer
-      class="fixed bottom-0 p-4 w-full max-w-4xl grid grid-rows-3 grid-cols-5 lg:grid-rows-1 lg:grid-cols-8"
+      class="fixed bottom-0 p-4 w-full max-w-4xl grid grid-rows-3 grid-cols-5 lg:grid-rows-1 lg:grid-cols-10"
     >
       <span class="col-start-1">{{ state }}</span>
-      <span class="col-start-4 col-span-2 text-right lg:col-start-7">
+      <span class="col-start-4 col-span-2 text-right lg:col-start-9">
         Sessions left:
         {{
           state === "bigBreak"
@@ -36,7 +36,7 @@
         timeLeft | time
       }}</span>
       <span
-        class="row-start-2 col-start-4 col-span-2 text-right lg:row-start-1 lg:col-start-6 lg:col-span-1"
+        class="row-start-2 col-start-4 col-span-2 text-right lg:row-start-1 lg:col-start-8 lg:col-span-1"
         >{{ totalTime | time(totalTime, true) }}</span
       >
       <button
@@ -45,20 +45,26 @@
       >
         &#9198;&#65039;
       </button>
-      <button class="row-start-3 col-start-2" v-on:click="reverse">
+      <button
+        class="row-start-3 col-start-2 lg:row-start-1 lg:col-start-4"
+        v-on:click="reverse"
+      >
         &#9194;
       </button>
       <button
-        class="toggle row-start-3 col-start-3 lg:row-start-1 lg:col-start-4"
+        class="toggle row-start-3 col-start-3 lg:row-start-1 lg:col-start-5"
         v-on:click="toggleTimer"
       >
         {{ this.running ? "&#9208;&#65039;" : "&#9654;" }}
       </button>
-      <button class="row-start-3 col-start-4" v-on:click="forward">
+      <button
+        class="row-start-3 col-start-4 lg:row-start-1 lg:col-start-6"
+        v-on:click="forward"
+      >
         &#9193;
       </button>
       <button
-        class="next row-start-3 col-start-5 lg:row-start-1 lg:col-start-5"
+        class="next row-start-3 col-start-5 lg:row-start-1 lg:col-start-7"
         v-on:click="proceedToNextState"
       >
         &#9197;&#65039;
