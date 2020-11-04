@@ -12,5 +12,10 @@ export function time(value, hours = false) {
 Vue.filter("time", time);
 
 new Vue({
-  render: (h) => h(App)
+  render: (h) =>
+    h(App, {
+      props: {
+        // worker
+      }
+    })
 }).$mount("#root");

@@ -74,10 +74,28 @@
 </template>
 
 <script>
+import Push from "push.js";
 import saveState from "vue-save-state";
 import { uuidv4 } from "./uuid";
 import EditableText from "./components/EditableText.vue";
 import Entry from "./components/Entry.vue";
+
+let worker;
+if (window.Worker) {
+  worker = new Worker("web-worker.js");
+  // console.log("main", worker);
+  // worker.onmessage = function(e) {
+  //   console.log(e.data);
+  //   console.log("Message received from worker");
+  // };
+}
+
+// TODO: how to import from worker-action-types.js when web worker does not support modules?
+const workerActionTypes = {
+  start: "start",
+  stop: "stop",
+  tick: "tick"
+};
 
 export const states = {
   bigBreak: "bigBreak",
@@ -102,8 +120,21 @@ export default {
     Entry
   },
   mixins: [saveState],
+  props: {
+    // worker: Worker
+  },
   created() {
+    Push.Permission.request();
     this.interval = undefined;
+    worker.onmessage = (e) => {
+      switch (e.data.type) {
+        case workerActionTypes.tick:
+          this.workerCallback();
+          break;
+        default:
+          break;
+      }
+    };
   },
   beforeDestroy() {
     this.stopTimer();
@@ -198,12 +229,17 @@ export default {
       };
     },
     async notify() {
-      this.notification?.close();
-      const result = await Notification.requestPermission();
-      if (result === "granted") {
-        const body = messages[this.state];
-        this.notification = new Notification("Vuedoro", { body });
-      }
+      // this.notification?.close();
+      Push.clear();
+      // const result = await Notification.requestPermission();
+      // if (result === "granted") {
+      //   const body = messages[this.state];
+      //   this.notification = new Notification("Vuedoro", { body });
+      // }
+      const body = messages[this.state];
+      Push.create("Vuedoro", {
+        body
+      });
     },
     onActivate(id) {
       if (this.activeEntry === id) {
@@ -261,7 +297,10 @@ export default {
     },
     stopTimer() {
       this.running = false;
-      clearInterval(this.interval);
+      // clearInterval(this.interval);
+      worker.postMessage({
+        type: workerActionTypes.stop
+      });
       this.interval = undefined;
     },
     toggleTimer() {
@@ -272,21 +311,35 @@ export default {
         return;
       }
       this.running = !this.running;
+    },
+    workerCallback() {
+      if (this.time < minutesToMilliseconds(this.config[this.state])) {
+        this.time = this.time + 1000;
+        if (this.timeLeft <= 0) {
+          this.proceedToNextState();
+        }
+      }
     }
   },
   watch: {
     running: function() {
       if (typeof this.interval === "undefined" && this.running) {
-        this.interval = setInterval(() => {
-          if (this.time < minutesToMilliseconds(this.config[this.state])) {
-            this.time = this.time + 1000;
-
-            if (this.timeLeft <= 0) {
-              this.proceedToNextState();
-            }
-          }
-        }, 1000);
-      } else if (typeof this.interval === "number" && !this.running) {
+        worker.postMessage({
+          type: workerActionTypes.start
+        });
+        // this.interval = setInterval(() => {
+        //   if (this.time < minutesToMilliseconds(this.config[this.state])) {
+        //     this.time = this.time + 1000;
+        //     if (this.timeLeft <= 0) {
+        //       this.proceedToNextState();
+        //     }
+        //   }
+        // }, 1000);
+        // worker.postMessage({
+        //   type: "start",
+        //   callback: workerCallback
+        // });
+      } else if (/* typeof this.interval === "number" &&  */ !this.running) {
         this.stopTimer();
       }
     },
