@@ -74,6 +74,7 @@
 </template>
 
 <script>
+import Push from "push.js";
 import saveState from "vue-save-state";
 import { uuidv4 } from "./uuid";
 import EditableText from "./components/EditableText.vue";
@@ -104,6 +105,7 @@ export default {
   mixins: [saveState],
   created() {
     this.interval = undefined;
+    Push.create("Hello World!");
   },
   beforeDestroy() {
     this.stopTimer();
